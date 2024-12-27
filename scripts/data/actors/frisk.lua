@@ -15,6 +15,10 @@ function actor:init()
 
     -- Color for this actor used in outline areas (optional, defaults to red)
     self.color = {0, 1, 0}
+    
+    -- A table that defines where the Soul should be placed on this actor if they are a player.
+    -- First value is x, second value is y.
+    self.soul_offset = {9, 28}
 
     -- Path to this actor's sprites (defaults to "")
     self.path = "party/frisk/dark"
@@ -124,6 +128,14 @@ function actor:init()
 
         ["t_pose"] = {-4, 0},
     }
+end
+
+function actor:getVoice()
+    if Game.state == "GAMEOVER" then
+        return "asgore"
+    else
+        return super.getVoice(self)
+    end
 end
 
 return actor

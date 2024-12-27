@@ -11,13 +11,9 @@ function character:init()
     self:setLightActor("frisk_lw")
 
     -- Display level (saved to the save file)
-    self.level = Game.chapter
+    self.level = 1
     -- Default title / class (saved to the save file)
-    if Game.chapter == 1 then
-        self.title = "Fallen Human\nArrived from a\ndiffrent world."
-    else
-        self.title = "Fallen Human\nArrived from a\ndiffrent world."
-    end
+    self.title = "Fallen Human\nArrived from a\ndiffrent world."
 
     -- Determines which character the soul comes from (higher number = higher priority)
     self.soul_priority = 2
@@ -26,7 +22,10 @@ function character:init()
 
     -- Whether the party member can act / use spells
     self.has_act = true
-    self.has_spells = true
+    self.has_spells = false
+    
+    -- Magical Glass only
+    self.undertale_movement = true
 
     -- Whether the party member can use their X-Action
     self.has_xact = true
@@ -34,55 +33,26 @@ function character:init()
     self.xact_name = "F-Action"
 
     -- Current health (saved to the save file)
-    if Game.chapter == 1 then
-        self.health = 90
-    else
-        self.health = 90
-    end
+    self.health = 90
 
     -- Base stats (saved to the save file)
-    if Game.chapter == 1 then
-        self.stats = {
-            health = 90,
-            attack = 10,
-            defense = 2,
-            magic = 0
-        }
-    else
-        self.stats = {
-            health = 90,
-            attack = 10,
-            defense = 2,
-            magic = 0
-        }
-    end
+    self.stats = {
+        health = 90,
+        attack = 10,
+        defense = 2,
+        magic = 0
+    }
     -- Max stats from level-ups
-    if Game.chapter == 1 then
-        self.max_stats = {
-            health = 120
-        }
-    else
-        self.max_stats = {
-            health = 120
-        }
-    end
+    self.max_stats = {
+        health = 120
+    }
 
     -- Weapon icon in equip menu
     self.weapon_icon = "ui/menu/equip/rapier"
 
-    -- Equipment (saved to the save file)
-    if Game.chapter >= 2 then
-   --     self:setArmor(1, "amber_card")
-    --    self:setArmor(2, "amber_card")
-    end
-
-    -- Default light world equipment item IDs (saves current equipment)
-    --self.lw_weapon_default = "ut_weapons/stick"
-    --self.lw_armor_default = "ut_armors/bandage"
-
-
     self:setWeapon("wood_rapier")
 
+    -- Default light world equipment item IDs (saves current equipment)
     if MagicalGlassLib then
         self.lw_weapon_default = "ut_weapons/stick"
         self.lw_armor_default = "ut_armors/bandage"
@@ -91,22 +61,7 @@ function character:init()
         self.lw_armor_default = "light/bandage"
     end
 
-
-
-
-
     -- Character color (for action box outline and hp bar)
-    if Game.light == true then
-    self.color = {1, 1, 1}
-    -- Damage color (for the number when attacking enemies) (defaults to the main color)
-    self.dmg_color = {1, 0, 0}
-    -- Attack bar color (for the target bar used in attack mode) (defaults to the main color)
-    self.attack_bar_color = {1, 1, 1}
-    -- Attack box color (for the attack area in attack mode) (defaults to darkened main color)
-    self.attack_box_color = {1, 1, 1}
-    -- X-Action color (for the color of X-Action menu items) (defaults to the main color)
-    self.xact_color = {1, 1, 1}
-    else
     self.color = {170/255, 1, 0}
     -- Damage color (for the number when attacking enemies) (defaults to the main color)
     self.dmg_color = {170/255, 1, 0}
@@ -116,11 +71,28 @@ function character:init()
     self.attack_box_color = {85/255, 1, 0}
     -- X-Action color (for the color of X-Action menu items) (defaults to the main color)
     self.xact_color = {170/255, 1, 0}
-    end
+    
+    -- Magical Glass only
+    -- Light Battle Colors
+    self.light_color = COLORS.white
+    self.light_dmg_color = COLORS.red
+    self.light_miss_color = COLORS.silver
+    self.light_attack_color = {1, 105/255, 105/255}
+    self.light_multibolt_attack_color = COLORS.white
+    self.light_attack_bar_color = COLORS.white
+    self.light_xact_color = COLORS.white
+    
+    -- Dark Battle Colors in the light world
+    self.dmg_color_lw = COLORS.white
+    self.attack_bar_color_lw = COLORS.white
+    self.attack_box_color_lw = COLORS.silver
+    self.xact_color_lw = COLORS.white
+    
+    
     -- Head icon in the equip / power menu
     self.menu_icon = "party/frisk/head"
     -- Path to head icons used in battle
-    self.head_icons = "party/frisk/icon"
+    self.head_icons = "party/frisk/dark/icon"
     -- Name sprite
     self.name_sprite = "party/frisk/name"
 
@@ -140,6 +112,37 @@ function character:init()
 
     -- Message shown on gameover (optional)
     self.gameover_message = nil
+    self.force_gameover_message = true
+end
+
+function character:getName()
+    if Kristal.getLibConfig("frisk-lib", "use_player_name") then
+        return Game.save_name
+    else
+        return super.getName(self)
+    end
+end
+
+function character:getNameSprite()
+    if Kristal.getLibConfig("frisk-lib", "use_player_name") then
+        return nil
+    else
+        return super.getNameSprite(self)
+    end
+end
+
+
+function character:getHeadIcons()
+    if Game:isLight() then
+        return "party/frisk/light/icon"
+    else
+        return super.getHeadIcons(self)
+    end
+end
+
+function character:getGameOverMessage(main)
+    local determined = main:getName().."![wait:10]\nStay determined..."
+    return Utils.pick({{"You cannot give\nup just yet...", determined}, {"You're going to\nbe alright!", determined}, {"It cannot end\nnow!", determined}, {"Don't lose hope!", determined}, {"Our fate rests\nupon you...", determined}})
 end
 
 function character:onLevelUp(level)
