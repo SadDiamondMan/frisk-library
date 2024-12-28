@@ -8,17 +8,17 @@ function actor:init()
 
     -- Width and height for this actor, used to determine its center
     self.width = 20
-    self.height = 37
+    self.height = 30
 
     -- Hitbox for this actor in the overworld (optional, uses width and height by default)
-    self.hitbox = {0, 26.5, 20, 12}
+    self.hitbox = {1, 17.5, 18, 12}
 
     -- Color for this actor used in outline areas (optional, defaults to red)
     self.color = {1, 1, 1}
     
     -- A table that defines where the Soul should be placed on this actor if they are a player.
     -- First value is x, second value is y.
-    self.soul_offset = {9, 28}
+    self.soul_offset = {9.5, 21}
 
     -- Path to this actor's sprites (defaults to "")
     self.path = "party/frisk/light"
@@ -62,8 +62,6 @@ function actor:init()
         ["battle/victory"]      = {"walk/right_1", 1/10, false},
 
         -- Cutscene animations
-        ["jump_fall"]           = {"fall", 1/5, true},
-        ["jump_ball"]           = {"ball", 1/15, true},
     }
 
     -- Tables of sprites to change into in mirrors
@@ -78,14 +76,10 @@ function actor:init()
 
     self.offsets = {
         -- Movement offsets
-        ["walk/left"] = {1.5, 0},
-        ["walk/right"] = {-2.5, 0},
-        ["walk/up"] = {-1.5, 0},
-        ["walk/down"] = {0, 0},
-
-        ["walk_blush/down"] = {0, 0},
-
-        ["slide"] = {0, 0},
+        ["walk/left"] = {2, 1},
+        ["walk/right"] = {-2, 1},
+        ["walk/up"] = {-0.5, 1},
+        ["walk/down"] = {0.5, 1},
 
         -- Battle offsets
         ["battle/idle"] = {x, y},
